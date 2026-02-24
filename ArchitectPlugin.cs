@@ -59,7 +59,6 @@ public class ArchitectPlugin : Mod
         
         VanillaObjects.Init();
         SplineObjects.Init();
-        LegacyObjects.Init();
         UtilityObjects.Init();
         AbilityObjects.Init();
         MiscObjects.Init();

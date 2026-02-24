@@ -36,4 +36,57 @@ public class Plasmifier : MonoBehaviour
     {
         if (mode == 0 && !_plasmified) Plasmify();
     }
+
+    public class LifebloodState : MonoBehaviour
+    {
+      public int healAmount = 5;
+      private bool dead;
+      private bool healingIsActive = true;
+      private int maxHP;
+      private float timer;
+      private HealthManager healthManager;
+      private SpriteFlash spriteFlash;
+      private GameObject healEffect;
+
+      private void Start()
+      {
+        healthManager = gameObject.GetComponent<HealthManager>();
+        spriteFlash = gameObject.GetComponent<SpriteFlash>();
+
+        maxHP = healthManager.hp;
+      }
+
+      private void Update()
+      {
+        if (dead || !healingIsActive) return;
+        var hp = healthManager.hp;
+        if (hp < maxHP)
+        {
+          if (timer < 0.75)
+          {
+            timer += Time.deltaTime;
+          }
+          else
+          {
+            var num = hp + healAmount;
+            if (num > maxHP)
+              num = maxHP;
+            healthManager.hp = num;
+            healEffect.SetActive(true);
+            spriteFlash.flashHealBlue();
+            timer -= 0.75f;
+          }
+        }
+        else
+          timer = 0.0f;
+      }
+
+      public void TakeDamage() => timer = 0.0f;
+
+      public void SetIsLifebloodHealing(bool set)
+      {
+        timer = 0.0f;
+        healingIsActive = set;
+      }
+    }
 }

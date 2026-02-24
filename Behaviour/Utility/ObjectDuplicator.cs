@@ -14,7 +14,6 @@ public class ObjectDuplicator : MonoBehaviour
 
     public BlackThreader blackThreader;
     public Plasmifier plasmifier;
-    public Shielder shielder;
     
     private ObjectPlacement _placement;
 
@@ -44,6 +43,5 @@ public class ObjectDuplicator : MonoBehaviour
         
         if (blackThreader) blackThreader.BlackThread(obj);
         if (plasmifier) plasmifier.Plasmify(obj);
-        if (shielder) shielder.Shield(obj);
     }
 }

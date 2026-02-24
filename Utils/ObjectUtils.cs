@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Architect.Events;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Architect.Utils;
@@ -53,6 +52,27 @@ public static class ObjectUtils
         }
 
         return null;
+    }
+
+    public static void SetLocalPositionX(this Transform trans, float x)
+    {
+        var lp = trans.localPosition;
+        lp.x = x;
+        trans.localPosition = lp;
+    }
+
+    public static void SetLocalPositionZ(this Transform trans, float z)
+    {
+        var lp = trans.localPosition;
+        lp.z = z;
+        trans.localPosition = lp;
+    }
+
+    public static void SetLocalPositionY(this Transform trans, float y)
+    {
+        var lp = trans.localPosition;
+        lp.y = y;
+        trans.localPosition = lp;
     }
     
     internal static GameObject GetGameObjectFromArray(GameObject[] objects, string objName)

@@ -152,18 +152,7 @@ public class UIPngObject : PngObject
         {
             case 1:
                 offset.x += 0.94f * PlayerData.instance.maxHealth;
-                break;
-            case 2:
-                if (!ToolItemManager.Instance) return;
-                if (ToolItemManager.Instance.boundAttackTools == null) return;
-                
-                var hc = GameCameras.instance.hudCamera.transform
-                    .Find("In-game").Find("Anchor TL").Find("Hud Canvas Offset").Find("Hud Canvas");
-                var spool = hc.Find("Tool Icons");
-                offset.x += 1.02f * 
-                            ToolItemManager.Instance.boundAttackTools.Count(o => o) 
-                            + spool.transform.GetPositionX();
-                break;
+                break;// TODO May need adjusting, also change config
         }
 
         _constraint.translationOffset = offset;
