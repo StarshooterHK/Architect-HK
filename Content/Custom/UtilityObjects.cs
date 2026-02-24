@@ -35,12 +35,11 @@ public static class UtilityObjects
         Categories.Utility.Add(CreateTriggerZone());
         Categories.Utility.Add(CreateEnemyDamager());
         Categories.Utility.Add(CreateInteraction());
-        Categories.Utility.Add(CreateFakePerformance());
         
         Categories.Utility.Add(CreateEnemyHook());
         Categories.Utility.Add(CreateFsmHook());
         
-        Categories.Utility.Add(CreateCocoonSpawn());
+        // Categories.Utility.Add(CreateCocoonSpawn()); // TODO Shade spawn point
         
         Categories.Utility.Add(CreateWalkTarget());
         Categories.Utility.Add(CreateDarkness());
@@ -134,10 +133,8 @@ public static class UtilityObjects
 
                     var objects = o.scene.GetRootGameObjects().Where(obj =>
                         !obj.name.StartsWith("[Architect]")
-                        && !obj.name.Contains("Hornet Cocoon Corpse")
                         && !obj.name.StartsWith("_SceneManager")
                         && !obj.GetComponent<CustomTransitionPoint>()
-                        && !obj.GetComponent<WorldRumblePreventWhileActive>()
                         && !obj.GetComponentInChildren<SceneAdditiveLoadConditional>()
                         && obj.name.Contains(filter)
                     );
@@ -490,40 +487,6 @@ public static class UtilityObjects
         return new CustomObject("Disable Vignette", "vignette_disabler", vignetteDisabler,
             description:"Disables the Vignette effect.",
             sprite:ResourceUtils.LoadSpriteResource("vignette_disabler", FilterMode.Point));
-    }
-
-    private static PlaceableObject CreateFakePerformance()
-    {
-        FakePerformanceRegion.Init();
-        
-        var relay = new GameObject("Fake Needolin");
-
-        relay.AddComponent<FakePerformanceRegion>();
-
-        relay.SetActive(false);
-        Object.DontDestroyOnLoad(relay);
-
-        return new CustomObject("Fake Needolin Performance", "fake_performance",
-                relay,
-                sprite: ResourceUtils.LoadSpriteResource("fake_performance", FilterMode.Point, ppu:64),
-                description: "Acts like the Needolin is playing at this object's position when it is active.")
-            .WithConfigGroup(ConfigGroup.FakePerformance);
-    }
-
-    private static PlaceableObject CreateCocoonSpawn()
-    {
-        var cocoon = new GameObject("[Architect] Cocoon Spawn Point");
-
-        cocoon.SetActive(false);
-        Object.DontDestroyOnLoad(cocoon);
-
-        cocoon.AddComponent<HeroCorpseMarker>().guidComponent = cocoon.AddComponent<CustomGuidComponent>();
-
-        return new CustomObject("Cocoon Spawn Point", "cocoon_spawn",
-                cocoon,
-                sprite: ResourceUtils.LoadSpriteResource("cocoon_spawn", FilterMode.Point, ppu:64),
-                description: "Cocoon spawns at the nearest spawn point.")
-            .WithConfigGroup(ConfigGroup.CocoonSpawnPoint);
     }
 
     private static PlaceableObject CreateObjectSpawner()

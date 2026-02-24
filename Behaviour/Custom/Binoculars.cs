@@ -30,7 +30,7 @@ public class Binoculars : MonoBehaviour
         if (!_active) return;
 
         var actions = InputHandler.Instance.inputActions;
-        if (actions.Jump.WasPressed || GameManager.instance.isPaused)
+        if (actions.jump.WasPressed || GameManager.instance.isPaused)
         {
             BinocularsActive = false;
             _active = false;
@@ -47,12 +47,12 @@ public class Binoculars : MonoBehaviour
         }
 
         float vertical = 0;
-        if (actions.Up.IsPressed) vertical++;
-        if (actions.Down.IsPressed) vertical--;
+        if (actions.up.IsPressed) vertical++;
+        if (actions.down.IsPressed) vertical--;
 
         float horizontal = 0;
-        if (actions.Right.IsPressed) horizontal++;
-        if (actions.Left.IsPressed) horizontal--;
+        if (actions.right.IsPressed) horizontal++;
+        if (actions.left.IsPressed) horizontal--;
 
         var zf = GameCameras.instance.tk2dCam.ZoomFactor;
 

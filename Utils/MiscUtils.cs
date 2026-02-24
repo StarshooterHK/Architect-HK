@@ -22,6 +22,16 @@ public static class MiscUtils
                                          (condition == null || condition.Invoke(hero)));
     }
 
+    public static bool IsNullOrWhiteSpace(this string txt)
+    {
+        return string.IsNullOrEmpty(txt);
+    }
+
+    public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
+    {
+        return collection == null || collection.Count == 0;
+    }
+
     [CanBeNull]
     public static SavedItem GetSavedItem(string name)
     {

@@ -442,13 +442,7 @@ public static class ConfigGroup
             new StringConfigType("Dialogue", "shakra_text", (o, value) =>
             {
                 o.GetComponent<MiscFixers.Npc>().text = value.GetValue();
-            }).WithDefaultValue("Sample Text").WithPriority(-1)),
-        ConfigurationManager.RegisterConfigType(
-            new BoolConfigType("Needolin Dialogue", "needolin_on", (o, value) =>
-            {
-                if (value.GetValue()) return;
-                o.RemoveComponentsInChildren<NeedolinTextOwner>();
-            }).WithDefaultValue(true))
+            }).WithDefaultValue("Sample Text").WithPriority(-1))
     ]);
 
     public static readonly List<ConfigType> MaskMaker = GroupUtils.Merge(Npcs, [

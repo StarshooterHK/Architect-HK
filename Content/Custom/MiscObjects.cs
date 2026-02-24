@@ -4,7 +4,6 @@ using Architect.Objects.Categories;
 using Architect.Objects.Groups;
 using Architect.Objects.Placeable;
 using Architect.Utils;
-using GlobalEnums;
 using UnityEngine;
 using UnityEngine.Video;
 using Object = UnityEngine.Object;
@@ -50,12 +49,7 @@ public static class MiscObjects
             .WithInputGroup(InputGroup.Png)
             .WithOutputGroup(OutputGroup.Png));
         
-        Categories.Misc.Add(CreateSilkSphere());
-        
-        Categories.Hazards.Add(CreateFrost());
-        
         Categories.Platforming.Add(CreateWind());
-        Categories.Platforming.Add(CreateBumper());
         //Categories.Platforming.Add(CreateDreamBlock());
 
         Categories.Hazards.Add(CreateCustomHazard("White Thorns", "white_thorns",
@@ -69,7 +63,6 @@ public static class MiscObjects
         ]));
 
         Categories.Hazards.Add(CreateJellyEgg());
-        Categories.Hazards.Add(CreateWhiteSpikes());
     }
 
     private static PlaceableObject CreateJellyEgg()
@@ -105,73 +98,6 @@ public static class MiscObjects
                             "egg automatically regenerate after the configured number of seconds.")
             .WithRotationGroup(RotationGroup.All)
             .WithConfigGroup(ConfigGroup.JellyEgg);
-    }
-
-    private static PlaceableObject CreateWhiteSpikes()
-    {
-        var plate = new GameObject("Moving Spikes")
-        {
-            transform = { localPosition = new Vector3(0, 0, 0.05f) }
-        };
-        
-        plate.SetActive(false);
-        Object.DontDestroyOnLoad(plate);
-        
-        plate.AddComponent<SpriteRenderer>().sprite = ResourceUtils.LoadSpriteResource("Spikes.spikes_plate", ppu: 64);
-
-        var spikes = new GameObject("Moving Part")
-        {
-            transform =
-            {
-                parent = plate.transform,
-                localPosition = new Vector3(0, 0, 0.05f)
-            }
-        };
-        
-        WhiteSpikes.Init();
-
-        spikes.AddComponent<WhiteSpikes>();
-        spikes.AddComponent<SpriteRenderer>();
-
-        var damager = new GameObject("Damager")
-        {
-            transform = { parent = spikes.transform },
-            layer = LayerMask.NameToLayer("Attack")
-        };
-        
-        var collider = damager.AddComponent<BoxCollider2D>();
-        collider.offset = new Vector2(0, 2.1f);
-        collider.size = new Vector2(2, 1.1f);
-
-        var ef1 = damager.AddComponent<TinkEffect>();
-        
-        damager.AddComponent<DamageHero>().hazardType = HazardType.SPIKES;
-        damager.AddComponent<DamageEnemies>().damageDealt = 20;
-
-        var terrain = new GameObject("Terrain")
-        {
-            transform = { parent = spikes.transform },
-            layer = LayerMask.NameToLayer("Terrain")
-        };
-        
-        var terrainCol = terrain.AddComponent<BoxCollider2D>();
-        terrainCol.offset = new Vector2(0, -0.7f);
-        terrainCol.size = new Vector2(1.5f, 4.5f);
-
-        var ef2 = terrain.AddComponent<TinkEffect>();
-        
-        PreloadManager.RegisterPreload(new BasicPreload(
-            "Greymoor_06", "Greymoor_windmill_cog (1)/GameObject/dustpen_trap_shine0000", o =>
-            {
-                var blockEffect = o.GetComponent<TinkEffect>().blockEffect;
-                ef1.blockEffect = blockEffect;
-                ef2.blockEffect = blockEffect;
-            }));
-        
-        return new CustomObject("Moving Spikes", "wp_trap_spikes", plate, 
-                sprite:ResourceUtils.LoadSpriteResource("Spikes.spikes_icon", ppu:64))
-            .WithConfigGroup(ConfigGroup.WhiteSpikes)
-            .WithRotationGroup(RotationGroup.Four);
     }
 
     public static PlaceableObject CreateCustomHazard(string name, string id, Vector2[] points)
@@ -247,54 +173,6 @@ public static class MiscObjects
 
         return new CustomObject("Dream Block", "dream_block", obj)
             .WithConfigGroup(ConfigGroup.DreamBlock);
-    }
-
-    private static PlaceableObject CreateSilkSphere()
-    {
-        var sphere = new GameObject("Silk Sphere");
-        
-        SilkSphere.Init();
-        
-        sphere.SetActive(false);
-        Object.DontDestroyOnLoad(sphere);
-
-        sphere.transform.position = new Vector3(0, 0, 0.005f);
-
-        sphere.AddComponent<SilkSphere>();
-        sphere.AddComponent<HarpoonHook>();
-        sphere.AddComponent<SpriteRenderer>().sprite = ResourceUtils.LoadSpriteResource("silk_sphere", ppu:50);
-
-        var col = sphere.AddComponent<CircleCollider2D>();
-        col.isTrigger = true;
-        col.radius = 2.2f;
-        sphere.layer = LayerMask.NameToLayer("Interactive Object");
-
-        return new CustomObject("Silk Sphere", "silk_sphere",
-                sphere,
-                description: "An infinite source of Silk.")
-            .WithRotationGroup(RotationGroup.All);
-    }
-
-    private static PlaceableObject CreateFrost()
-    {
-        var frost = new GameObject("Frost Marker");
-        
-        FrostMarker.Init();
-        
-        frost.SetActive(false);
-        Object.DontDestroyOnLoad(frost);
-
-        frost.AddComponent<FrostMarker>();
-
-        return new CustomObject("Frost", "frost_marker",
-                frost,
-                sprite:ResourceUtils.LoadSpriteResource("cold_icon", ppu:50),
-                description: "When enabled, the player will take frost damage over time.\n\n" +
-                             "If the player has the Faydown Cloak then frost will not affect them,\n" +
-                             "unless a Frost Binding is active.\n\n" +
-                             "The player begins freezing after (100/frost speed) seconds,\n" +
-                             "and hits are 1.75 seconds apart.")
-            .WithConfigGroup(ConfigGroup.Frost);
     }
 
     private static PlaceableObject CreateAsset<T>(string name, string id, bool addRenderer, 
@@ -422,45 +300,5 @@ public static class MiscObjects
         Object.DontDestroyOnLoad(point);
 
         return point;
-    }
-
-    private static PlaceableObject CreateBumper()
-    {
-        Bumper.Init();
-        
-        var bumper = new GameObject("Bumper")
-        {
-            layer = LayerMask.NameToLayer("Terrain")
-        };
-        
-        bumper.SetActive(false);
-        Object.DontDestroyOnLoad(bumper);
-        
-        bumper.transform.position = new Vector3(0, 0, 0.005f);
-        
-        bumper.AddComponent<HarpoonHook>();
-        bumper.AddComponent<Bumper>();
-        bumper.AddComponent<SpriteRenderer>().sprite = Bumper.NormalIcon;
-
-        var col = bumper.AddComponent<CircleCollider2D>();
-        col.isTrigger = true;
-        col.radius = 0.7f;
-
-        var damager = new GameObject("Damager")
-        {
-            transform = { parent = bumper.transform },
-            layer = LayerMask.NameToLayer("Attack")
-        };
-        
-        var damageCol = damager.AddComponent<CircleCollider2D>();
-        damageCol.isTrigger = true;
-        damageCol.radius = 0.7f;
-        
-        damager.AddComponent<DamageHero>().hazardType = HazardType.COAL_SPIKES;
-        damager.AddComponent<DamageEnemies>().damageDealt = 20;
-        
-        return new CustomObject("Bumper", "celeste_bumper", bumper)
-            .WithConfigGroup(ConfigGroup.Bumpers)
-            .WithReceiverGroup(ReceiverGroup.Bumpers);
     }
 }

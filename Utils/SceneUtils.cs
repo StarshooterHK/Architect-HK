@@ -6,7 +6,6 @@ using Architect.Behaviour.Utility;
 using Architect.Content.Preloads;
 using Architect.Placements;
 using Architect.Storage;
-using Architect.Workshop.Items;
 using GlobalEnums;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;

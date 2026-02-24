@@ -18,7 +18,7 @@ public class Fallthrough : MonoBehaviour
     {
         if (!collision.gameObject.GetComponent<HeroController>()) return;
 
-        if (!InputHandler.Instance.inputActions.Down)
+        if (!InputHandler.Instance.inputActions.down)
         {
             _time = 0;
             return;
