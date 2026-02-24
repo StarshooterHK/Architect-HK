@@ -14,6 +14,11 @@ public static class ObjectUtils
         var comp = obj.GetComponent<T>();
         return comp ? comp : obj.AddComponent<T>();
     }
+
+    public static bool IsNullOrWhiteSpace(this string txt)
+    {
+        return string.IsNullOrEmpty(txt);
+    }
     
     public static void RemoveComponent<T>(this GameObject obj) where T : Component
     {

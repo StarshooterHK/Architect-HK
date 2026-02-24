@@ -31,7 +31,6 @@ public static class AbilityObjects
     
     // Registered ability objects
     internal static readonly List<(string, Sprite)> Bindings = [];
-    internal static readonly List<(string, Sprite)> CrestBindings = [];
     internal static readonly List<(string, int, Sprite)> Crystals = [];
     
     // UI Icons
@@ -59,20 +58,6 @@ public static class AbilityObjects
         Categories.Abilities.Add(MakeAbilityBinding("Attack", "attack"));
         // Categories.Abilities.Add(MakeAbilityBinding("Tool", "tools"));
         SetupBindingHooks();
-        
-        CrestBinding.InitCrestBindings();
-        Categories.Abilities.Add(MakeCrestBinding("Hunter", "hunter_crest", "Hunter"));
-        Categories.Abilities.Add(MakeCrestBinding("Hunter v2", "hunter_2_crest", "Hunter_v2"));
-        Categories.Abilities.Add(MakeCrestBinding("Hunter v3", "hunter_3_crest", "Hunter_v3"));
-        Categories.Abilities.Add(MakeCrestBinding("Reaper", "reaper_crest", "Reaper"));
-        Categories.Abilities.Add(MakeCrestBinding("Wanderer", "wanderer_crest", "Wanderer"));
-        Categories.Abilities.Add(MakeCrestBinding("Beast", "beast_crest", "Warrior"));
-        Categories.Abilities.Add(MakeCrestBinding("Witch", "witch_crest", "Witch"));
-        Categories.Abilities.Add(MakeCrestBinding("Architect", "architect_crest", "Toolmaster"));
-        Categories.Abilities.Add(MakeCrestBinding("Shaman", "shaman_crest", "Spell"));
-        Categories.Abilities.Add(MakeCrestBinding("Cursed", "cursed_crest", "Cursed"));
-        Categories.Abilities.Add(MakeCrestBinding("Cloakless", "cloakless_crest", "Cloakless"));
-        
         SetupVisuals();
     }
 
@@ -160,37 +145,6 @@ public static class AbilityObjects
             .WithBroadcasterGroup(BroadcasterGroup.Bindings)
             .WithConfigGroup(ConfigGroup.Bindings);
     }
-
-    private static PlaceableObject MakeCrestBinding(string name, string id, string crestId)
-    {
-        var obj = new GameObject($"{name} Crest Binding");
-        Object.DontDestroyOnLoad(obj);
-        obj.SetActive(false);
-        
-        obj.transform.position = new Vector3(0, 0, 0.005f);
-        
-        var binding = obj.AddComponent<CrestBinding>();
-        binding.bindingType = crestId;
-        
-        var enabledSprite = ResourceUtils.LoadSpriteResource($"Bindings.{id}_enabled");
-        binding.enabledSprite = enabledSprite;
-        binding.disabledSprite = ResourceUtils.LoadSpriteResource($"Bindings.{id}_disabled");
-        
-        obj.AddComponent<SpriteRenderer>().sprite = enabledSprite;
-        CrestBindings.Add((crestId, enabledSprite));
-        
-        var collider = obj.AddComponent<CircleCollider2D>();
-        collider.isTrigger = true;
-        collider.radius = 0.65f;
-
-        return new CustomObject($"{name} Binding", $"{id}_binding", obj,
-                description: "Locks the player to this crest when the binding is active.\n" +
-                             "If multiple crest bindings are placed, the crest with the most bindings will be the active crest.\n\n" +
-                             "Touching the binding will toggle it. 'Binding Active' determines whether it starts on.\n" +
-                             "Enable 'Reversible' to allow the binding to be toggled on and off multiple times.")
-            .WithBroadcasterGroup(BroadcasterGroup.Bindings)
-            .WithConfigGroup(ConfigGroup.Bindings);
-    }
     #endregion
 
     #region Binding Checks
@@ -212,29 +166,6 @@ public static class AbilityObjects
         list.RemoveAll(binding => !binding);
 
         return list.Count(binding => binding.active && binding.gameObject.activeInHierarchy) == 0;
-    }
-
-    public static (string, Sprite)? GetActiveCrestBinding()
-    {
-        var max = 0;
-        
-        (string, Sprite)? activeBinding = null;
-        
-        foreach (var bind in CrestBindings)
-        {
-            if (!ActiveBindings.TryGetValue(bind.Item1, out var active)) continue;
-            active.RemoveAll(binding => !binding);
-            
-            var count = active.Count(binding => binding.active && binding.gameObject.activeInHierarchy);
-
-            if (count > max)
-            {
-                max = count;
-                activeBinding = bind;
-            }
-        }
-
-        return activeBinding;
     }
     #endregion
 
@@ -278,16 +209,6 @@ public static class AbilityObjects
         {
             BindingIcons[i].sprite = bind.Item2;
             i++;
-        }
-
-        var crestBinding = GetActiveCrestBinding();
-        if (crestBinding.HasValue)
-        {
-            if (!VisibleBindingCheck(crestBinding.Value.Item1))
-            {
-                BindingIcons[i].sprite = crestBinding.Value.Item2;
-                i++;
-            }
         }
 
         for (; i <= Bindings.Count; i++) BindingIcons[i].sprite = ArchitectPlugin.BlankSprite;

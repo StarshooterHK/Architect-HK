@@ -32,7 +32,6 @@ public class CustomScene : SpriteItem
         
         if (Map) Object.Destroy(Map);
         TrySetupMap();
-        if (SceneUtils.QWHookEnabled) QuickWarpHookLoader.RegisterScene(Group, Id);
     }
 
     public void TrySetupMap()
@@ -109,7 +108,5 @@ public class CustomScene : SpriteItem
     {
         SceneUtils.CustomScenes.Remove(Id);
         if (Map) Object.Destroy(Map);
-        
-        if (SceneUtils.QWHookEnabled) QuickWarpHookLoader.UnregisterScene(Group, Id);
     }
 }

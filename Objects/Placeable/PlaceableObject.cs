@@ -10,7 +10,6 @@ using Architect.Objects.Groups;
 using Architect.Placements;
 using Architect.Storage;
 using Architect.Utils;
-using BepInEx;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -95,8 +94,6 @@ public abstract class PlaceableObject : SelectableObject
         }
         
         ZPosition = Prefab.transform.position.z;
-        
-        Prefab.RemoveComponent<BlackThreadState>();
         
         ParentScale = Prefab.transform.lossyScale;
         if (Sprite) LossyScale = ParentScale;

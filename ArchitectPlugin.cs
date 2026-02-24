@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Architect.Behaviour.Fixers;
 using Architect.Content;
 using Architect.Content.Custom;
@@ -13,32 +14,25 @@ using Architect.Prefabs;
 using Architect.Sharer;
 using Architect.Storage;
 using Architect.Utils;
-using BepInEx;
-using BepInEx.Logging;
-using Silksong.DataManager;
+using Modding;
 using UnityEngine;
 
 namespace Architect;
 
-[BepInPlugin("com.cometcake575.architect", "Architect", "3.18.5")]
-[BepInDependency("org.silksong-modding.prepatcher")]
-[BepInDependency("org.silksong-modding.assethelper")]
-[BepInDependency("io.github.hk-speedrunning.quickwarp", BepInDependency.DependencyFlags.SoftDependency)]
-[BepInDependency("ssmp", BepInDependency.DependencyFlags.SoftDependency)]
-public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>
+public class ArchitectPlugin : Mod
 {
-    internal static ArchitectPlugin Instance;
+    internal static ArchitectPlugin ModInstance;
+    internal static ArchitectManager Instance;
 
-    internal new static ManualLogSource Logger;
-    
     public static readonly Sprite BlankSprite = ResourceUtils.LoadSpriteResource("blank", ppu:300);
     
-    private void Awake()
+    public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
     {
-        Instance = this;
+        ModInstance = this;
         
-        Logger = base.Logger;
-        Logger.LogInfo("Architect has loaded!");
+        var am = new GameObject("ArchitectManager");
+        Instance = am.AddComponent<ArchitectManager>();
+        UnityEngine.Object.DontDestroyOnLoad(am);
 
         SceneUtils.Init();
         PrefabManager.Init();
@@ -91,17 +85,36 @@ public class ArchitectPlugin : BaseUnityPlugin, ISaveDataMod<ArchitectData>
                 orig(self);
             });
     }
-    
-    private void Update()
+
+    public class ArchitectManager : MonoBehaviour
     {
-        if (HeroController.instance)
+        private void Update()
         {
-            EditManager.Update();
-            HazardFixers.UpdateLanterns();
+            if (HeroController.instance)
+            {
+                EditManager.Update();
+                HazardFixers.UpdateLanterns();
+            }
+
+            CursorManager.Update();
+            SharerManager.Update();
+            AbilityObjects.Update();
         }
-        CursorManager.Update();
-        SharerManager.Update();
-        AbilityObjects.Update();
+    }
+    
+    public static readonly LoggerHandler Logger = new();
+
+    public class LoggerHandler
+    {
+        public void LogInfo(string message)
+        {
+            ModInstance.Log(message);
+        }
+        
+        public void LogError(object message)
+        {
+            ModInstance.LogError(message);
+        }
     }
 
     public ArchitectData SaveData { get; set; }
